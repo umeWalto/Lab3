@@ -9,6 +9,12 @@ class MainWindow(QWidget):
         self.setWindowTitle("Круги на форме")
         self.setGeometry(100, 100, 800, 600)
 
+        self.storage = MyStorage()
+
+        def paintEvent(self, event):
+            painter = QPainter(self)
+            self.storage.draw_all(painter)
+
 class CCircle:
     def __init__(self, x, y, radius=30):
         self._x = x
@@ -60,6 +66,13 @@ class MyStorage:
 
     def get_object(self):
         return self._data[self._index]
+    
+    def draw_all(self, painter: QPainter):
+        self.first()
+        while not self.eol():
+            obj = self.get_object()
+            obj.draw(painter)
+            self.next()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
