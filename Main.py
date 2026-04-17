@@ -26,6 +26,11 @@ class MainWindow(QWidget):
                 ctrl_pressed
             )
             self.update()
+    
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key.Key_Delete:
+            self.storage.remove_selected()
+            self.update()
 
 class CCircle:
     def __init__(self, x, y, radius=30):
@@ -113,6 +118,18 @@ class MyStorage:
         while not self.eol():
             self.get_object().set_selected(False)
             self.next()
+
+    def remove_selected(self):
+        new_data = []
+
+        self.first()
+        while not self.eol():
+            obj = self.get_object()
+            if not obj.is_selected():
+                new_data.append(obj)
+            self.next()
+
+        self._data = new_data
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
