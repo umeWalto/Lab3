@@ -15,13 +15,17 @@ class MainWindow(QWidget):
             painter = QPainter(self)
             self.storage.draw_all(painter)
         
-        def mousePressEvent(self, event):
-            if event.button() == Qt.MouseButton.LeftButton:
-                self.storage.add(CCircle(
-                    int(event.position().x()),
-                    int(event.position().y())
-                ))
-                self.update()
+    def mousePressEvent(self, event):
+        if event.button() == Qt.MouseButton.LeftButton:
+            modifiers = QApplication.keyboardModifiers()
+            ctrl_pressed = bool(modifiers & Qt.KeyboardModifier.ControlModifier)
+
+            self.storage.handle_click(
+                int(event.position().x()),
+                int(event.position().y()),
+                ctrl_pressed
+            )
+            self.update()
 
 class CCircle:
     def __init__(self, x, y, radius=30):
@@ -80,6 +84,34 @@ class MyStorage:
         while not self.eol():
             obj = self.get_object()
             obj.draw(painter)
+            self.next()
+
+    def handle_click(self, x, y, ctrl_pressed):
+        clicked = []
+
+        self.first()
+        while not self.eol():
+            obj = self.get_object()
+            if obj.contains(x, y):
+                clicked.append(obj)
+            self.next()
+
+        if not ctrl_pressed:
+            self.clear_selection()
+
+        if clicked:
+            for obj in clicked:
+                if ctrl_pressed:
+                    obj.set_selected(not obj.is_selected())
+                else:
+                    obj.set_selected(True)
+        else:
+            self.add(CCircle(x, y))
+        
+    def clear_selection(self):
+        self.first()
+        while not self.eol():
+            self.get_object().set_selected(False)
             self.next()
 
 if __name__ == "__main__":
