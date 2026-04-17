@@ -14,6 +14,14 @@ class MainWindow(QWidget):
         def paintEvent(self, event):
             painter = QPainter(self)
             self.storage.draw_all(painter)
+        
+        def mousePressEvent(self, event):
+            if event.button() == Qt.MouseButton.LeftButton:
+                self.storage.add(CCircle(
+                    int(event.position().x()),
+                    int(event.position().y())
+                ))
+                self.update()
 
 class CCircle:
     def __init__(self, x, y, radius=30):
